@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import axios from "axios";
 import { BadgeInfo, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -794,7 +795,7 @@ const Tile = ({
         ))}
       </div>
       {Data.find((data) => data.tile === number) && (
-        <span className="self-end text-black/60 mr-2">
+        <span className="self-end text-black/60 mr-1 text-sm">
           {Data.find((data) => data.tile === number)?.element}
         </span>
       )}
@@ -907,6 +908,7 @@ const Game = () => {
     lastRoll: number;
     end: boolean;
     playersSteps: { player: number; tiles: number[] }[];
+    generatedPage: string | null;
   }>({
     gameStarted: false,
     playerCount: 1,
@@ -915,6 +917,7 @@ const Game = () => {
     lastRoll: 0,
     end: false,
     playersSteps: [],
+    generatedPage: null,
   });
 
   const startGame = (playerCount: number) => {
@@ -930,6 +933,7 @@ const Game = () => {
       lastRoll: 0,
       end: false,
       playersSteps: [],
+      generatedPage: null,
     });
   };
 
@@ -1025,6 +1029,7 @@ const Game = () => {
             tiles: [game.players[game.playerTurn - 1].position],
           },
         ],
+        generatedPage: null,
       });
     }, 1000);
   };
@@ -1038,7 +1043,6 @@ const Game = () => {
           <input
             type="number"
             value={game.playerCount}
-            defaultValue={2}
             onChange={(e) => {
               setGame({
                 gameStarted: game.gameStarted,
@@ -1048,6 +1052,7 @@ const Game = () => {
                 lastRoll: game.lastRoll,
                 end: game.end,
                 playersSteps: game.playersSteps,
+                generatedPage: game.generatedPage,
               });
             }}
             className="w-1/2 h-20 text-3xl rounded-md border-2 border-gray-600 text-center"
@@ -1170,7 +1175,7 @@ const Game = () => {
           </div>
         </div>
       )}
-      {game.end && (
+      {game.end && !game.generatedPage && (
         <div className="flex flex-col items-center gap-20">
           <div className="flex flex-col items-center justify-center">
             <h1 className="text-[15rem]">🏆</h1>
@@ -1217,6 +1222,7 @@ const Game = () => {
                 lastRoll: 0,
                 end: false,
                 playersSteps: [],
+                generatedPage: null,
               });
             }}
             className="w-1/2 text-3xl py-10"
@@ -1224,7 +1230,31 @@ const Game = () => {
             Restart Game
           </Button>
           <Button
-            onClick={() => {}}
+            onClick={() => {
+              const winner = game.players.find(
+                (player) => player.position === 100
+              );
+              const elements = game.playersSteps.filter(
+                (steps) => steps.player === winner?.number
+              )
+              const arrayOfTiles = elements.map((element) => element.tiles);
+              const tiles = arrayOfTiles.flat();
+              const data = tiles.map((tile) => {
+                return Data.find((data) => data.tile === tile)?.element;
+              });
+              generatePage(data as string[]).then((page) => {
+                setGame({
+                  gameStarted: game.gameStarted,
+                  playerCount: game.playerCount,
+                  players: game.players,
+                  playerTurn: game.playerTurn,
+                  lastRoll: game.lastRoll,
+                  end: game.end,
+                  playersSteps: game.playersSteps,
+                  generatedPage: page,
+                });
+              });
+            }}
             className="w-1/2 text-3xl py-10"
             variant={"outline"}
           >
@@ -1232,8 +1262,48 @@ const Game = () => {
           </Button>
         </div>
       )}
+      {game.end && game.generatedPage && (
+        <div className="flex flex-col items-center gap-10">
+          <h1 className="text-3xl">Generated Page</h1>
+          <div
+            className="w-3/4 p-4 rounded-lg border-2 border-gray-600"
+            dangerouslySetInnerHTML={{ __html: game.generatedPage }}
+          ></div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Game;
+
+const generatePage = async (elements: string[]) => {
+  const apiKey: string = "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";
+  const prompt: string = `given this array of HTML tags provide hypothesis html page layout consist of these : ${elements.join(
+    ", "
+  )}`;
+  const apiUrl: string =
+    "https://api.openai.com/v1/completions";
+  console.log(elements);
+  try {
+    const response = await axios.post(
+      apiUrl,
+      {
+        prompt: prompt,
+        max_tokens: 1000,
+        temperature: 0,
+        model: "gpt-3.5-turbo-instruct"
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+      }
+    );
+    console.log(response);
+    return response.data.choices[0].text;
+  } catch (err) {
+    console.error(err);
+  }
+};

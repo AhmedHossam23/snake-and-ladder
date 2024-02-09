@@ -75,7 +75,7 @@
     @apply bg-background text-foreground h-full;
   }
 }
-body {
+body, html {
   background: rgb(238,174,202);
   background: rgb(237,255,252);
   background: radial-gradient(circle, rgb(245, 255, 253) 0%, rgb(235, 244, 255) 100%);}

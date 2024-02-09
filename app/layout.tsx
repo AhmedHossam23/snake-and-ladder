@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Gamja_Flower } from "next/font/google";
-import "./globals.css";
+import { Inter } from "next/font/google";import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const gamja_Flower = Gamja_Flower({
+const gamja_Flower = Inter({
   subsets: ["latin"],
   weight: "400",
 });

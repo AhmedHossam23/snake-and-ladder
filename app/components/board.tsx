@@ -1236,7 +1236,7 @@ const Game = () => {
               );
               const elements = game.playersSteps.filter(
                 (steps) => steps.player === winner?.number
-              )
+              );
               const arrayOfTiles = elements.map((element) => element.tiles);
               const tiles = arrayOfTiles.flat();
               const data = tiles.map((tile) => {
@@ -1278,13 +1278,11 @@ const Game = () => {
 export default Game;
 
 const generatePage = async (elements: string[]) => {
-  const apiKey: string = "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";
+  const apiKey: string = process.env.OPENAI_API_KEY as string;
   const prompt: string = `Create a simple HTML layout using the provided array of HTML tags.Ensure that the elements are logically organized and provide a basic structure for a webpage. You can also specify any additional instructions or details you want to include in the HTML layout. Please make the output cohesive and well-structured. The layout may include the following tags: ${elements.join(
     ", "
   )}`;
-  const apiUrl: string =
-    "https://api.openai.com/v1/completions";
-  console.log(elements);
+  const apiUrl: string = "https://api.openai.com/v1/completions";
   try {
     const response = await axios.post(
       apiUrl,
@@ -1292,7 +1290,7 @@ const generatePage = async (elements: string[]) => {
         prompt: prompt,
         max_tokens: 1000,
         temperature: 0,
-        model: "gpt-3.5-turbo-instruct"
+        model: "gpt-3.5-turbo-instruct",
       },
       {
         headers: {
@@ -1301,7 +1299,6 @@ const generatePage = async (elements: string[]) => {
         },
       }
     );
-    console.log(response);
     return response.data.choices[0].text;
   } catch (err) {
     console.error(err);

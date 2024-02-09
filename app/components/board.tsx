@@ -1265,10 +1265,7 @@ const Game = () => {
       {game.end && game.generatedPage && (
         <div className="flex flex-col items-center gap-10">
           <h1 className="text-3xl">Generated Page</h1>
-          <div
-            className="w-3/4 p-4 rounded-lg border-2 border-gray-600"
-            dangerouslySetInnerHTML={{ __html: game.generatedPage }}
-          ></div>
+          <iframe srcDoc={game.generatedPage} className="w-3/4 h-96 border rounded-md p-2"></iframe>
         </div>
       )}
     </div>
@@ -1278,7 +1275,7 @@ const Game = () => {
 export default Game;
 
 const generatePage = async (elements: string[]) => {
-  const apiKey: string = process.env.OPENAI_API_KEY as string;
+  const apiKey: string = "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";
   const prompt: string = `Create a simple HTML layout using the provided array of HTML tags.Ensure that the elements are logically organized and provide a basic structure for a webpage. You can also specify any additional instructions or details you want to include in the HTML layout. Please make the output cohesive and well-structured. The layout may include the following tags: ${elements.join(
     ", "
   )}`;

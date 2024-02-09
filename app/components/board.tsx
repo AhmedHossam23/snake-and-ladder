@@ -1278,8 +1278,8 @@ const Game = () => {
 export default Game;
 
 const generatePage = async (elements: string[]) => {
-  const apiKey: string = "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";
-  const prompt: string = `given this array of HTML tags provide hypothesis html page layout consist of these : ${elements.join(
+  const apiKey: string = "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";
+  const prompt: string = `Create a simple HTML layout using the provided array of HTML tags.Ensure that the elements are logically organized and provide a basic structure for a webpage. You can also specify any additional instructions or details you want to include in the HTML layout. Please make the output cohesive and well-structured. The layout may include the following tags: ${elements.join(
     ", "
   )}`;
   const apiUrl: string =

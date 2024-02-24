@@ -1275,7 +1275,7 @@ const Game = () => {
 export default Game;
 
 const generatePage = async (elements: string[]) => {
-  const apiKey: string = process.env.API as string;
+  const apiKey: string = process.env.NEXT_PUBLIC_API as string;
   const prompt: string = `Create a simple HTML layout using the provided array of HTML tags.Ensure that the elements are logically organized and provide a basic structure for a webpage. You can also specify any additional instructions or details you want to include in the HTML layout. Please make the output cohesive and well-structured. The layout may include the following tags: ${elements.join(
     ", "
   )}`;
